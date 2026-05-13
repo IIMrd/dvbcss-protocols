@@ -25,6 +25,8 @@ import { Correlation, CorrelatedClock } from "@iimrd/dvbcss-clocks";
 import { ProtocolHandler } from "../INTERFACES/ProtocolHandler.js";
 import { ControlTimestamp } from "./ControlTimestamp.js";
 import { TSSetupMessage } from "./TSSetupMessage.js";
+import { PresentationTimestamps } from "./PresentationTimestamps.js";
+import { PresentationTimestamp } from "./PresentationTimestamp.js";
 
 /**
  * @memberof dvbcss-protocols.TimelineSynchronisation
@@ -128,6 +130,22 @@ export class TSClientProtocol extends EventEmitter implements ProtocolHandler {
             const err = e as Error;
             throw new Error(`TSCP handleMessage: exception: ${err.message} -- msg: ${msg}`);
         }
+    }
+
+    /**
+     * Send presentation timestamps to the server. These are used by the server to determine the current position of the content and adjust the synchronization accordingly. Check out the DVB CSS specification for more details on the significance of these timestamps and how they are used by the server.
+     *
+     * @param {PresentationTimestamp} earliest
+     * @param {PresentationTimestamp} latest
+     * @param {PresentationTimestamp} [actual]
+     */
+    public sendPresentationTimestamps(
+        earliest: PresentationTimestamp,
+        latest: PresentationTimestamp,
+        actual?: PresentationTimestamp
+    ): void {
+        const pts = new PresentationTimestamps(earliest, latest, actual);
+        this.emit("send", pts.serialise(), { binary: false });
     }
 
     /**

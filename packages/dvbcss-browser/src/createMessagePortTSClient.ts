@@ -18,6 +18,11 @@ import { TSClientProtocol, TSClientProtocolOptions } from "@iimrd/dvbcss-node";
 import { CorrelatedClock } from "@iimrd/dvbcss-clocks";
 import { MessagePortAdaptor } from "./MessagePortAdaptor.js";
 
+export interface MessagePortTSClient {
+    adaptor: MessagePortAdaptor;
+    protocol: TSClientProtocol;
+}
+
 /**
  * Factory function that creates a Timeline Synchronisation client that
  * communicates over a MessagePort, sending/receiving CSS-TS messages in JSON format.
@@ -33,18 +38,14 @@ import { MessagePortAdaptor } from "./MessagePortAdaptor.js";
  * @param syncTLClock The CorrelatedClock to represent the synchronised timeline.
  *                    Updated automatically as ControlTimestamp messages are received.
  * @param clientOptions Options including contentIdStem and timelineSelector.
- * @returns The MessagePortAdaptor wrapping the whole client.
+ * @returns An object containing the MessagePortAdaptor and the TSClientProtocol.
  */
 export const createMessagePortTSClient = (
     port: MessagePort,
     syncTLClock: CorrelatedClock,
     clientOptions: TSClientProtocolOptions,
-): MessagePortAdaptor => {
-    return new MessagePortAdaptor(
-        new TSClientProtocol(
-            syncTLClock,
-            clientOptions,
-        ),
-        port,
-    );
+): MessagePortTSClient => {
+    const protocol = new TSClientProtocol(syncTLClock, clientOptions);
+    const adaptor = new MessagePortAdaptor(protocol, port);
+    return { adaptor, protocol };
 };
