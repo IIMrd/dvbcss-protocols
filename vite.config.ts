@@ -29,4 +29,12 @@ export default defineConfig({
   staged: {
     '*': 'vp check --fix',
   },
+  run: {
+    tasks: {
+      doc: {
+        command: 'typedoc',
+        input: [],
+      },
+    },
+  },
 });

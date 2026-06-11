@@ -20,7 +20,6 @@
     "build": "vp run -r build",
     "check": "vp check",
     "clean": "rm -rf packages/*/dist && rm -rf packages/*/*.tsbuildinfo",
-    "doc": "typedoc",
     "prepare": "vp config && vp run build && vp run doc"
   },
   "devDependencies": {
